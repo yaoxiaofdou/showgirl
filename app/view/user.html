@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("./ejs/header.ejs") %>
+</head>
+<body>
+  <div class="container">
+    <div class="menu">
+        <h1>SHOW GIRL TIME</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <%- include("./ejs/menu.ejs") %>
+        </div>
+        <div class="col-md-10">
+          
+          <table class="table table-hover table-sm">
+              <thead class="thead-dark">
+                  <tr>
+                    <th scope="col">No.</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">CreateTime</th>
+                    <th scope="col">LastTime</th>
+                    <th scope="col">Setting</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <% dataList.forEach(function(item, index){ %>
+                  <tr>
+                      <th scope="row"><%= index+1 %></th>
+                      <td><%= item.username %></td>
+                      <td><%= new Date(item.createtime).toLocaleString() %></td>
+                      <td><%= new Date(item.lastlogintime).toLocaleString() %></td>
+                      <td>
+                          <a href="/post/<%= item._id %>">修改</a>
+                          <a href="/post/delete/<%= item._id %>">删除</a>
+                      </td>
+                  </tr>
+                  <% }); %>
+              </tbody>
+          </table>
+
+        </div>
+    </div>
+  </div>
+  <%- include("./ejs/footer.ejs") %>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("./ejs/header.ejs") %>
+</head>
+<body>
+    <div class="container">
+        <div class="menu">
+            <h1>SHOW GIRL TIME</h1>
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                <%- include("./ejs/menu.ejs") %>
+            </div>
+            <div class="col-md-10">
+                <!-- list -->
+                <% if (type === 'edit'){ %>
+                    <a href="/imgcard">返回</a>
+                    <div>
+                        <div class="form-group">
+                            <label>图片组名称</label>
+                            <input class="form-control imgTitle" id="imgTitle" name="title" 
+                                        required placeholder="名称"/>
+                        </div>
+                        <div class="form-group" style="width: 150px;">
+                            <label for="name">选择分类</label>
+                            <select class="form-control tselect">
+                                <% clslist.forEach(function(item, index){ %>
+                                    <option value="<%= item.cid %>"><%= item.name %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div class="img-box full">
+                            <section class=" img-section">
+                                <p class="up-p">作品图片：</p>
+                                
+                                <div class="z_photo upimg-div clear" >
+                                    <!--<section class="up-section fl">
+                                        <span class="up-span"></span>
+                                        <img src="img/buyerCenter/a7.png" class="close-upimg">
+                                        <img src="img/buyerCenter/3c.png" class="type-upimg" alt="添加标签">
+                                        <img src="img/test2.jpg" class="up-img">
+                                        <p class="img-namep"></p>
+                                        <input id="taglocation" name="taglocation" value="" type="hidden">
+                                        <input id="tags" name="tags" value="" type="hidden">
+                                    </section>-->
+                                    <section class="z_file fl">
+                                        +<input type="file" name="file" id="file" class="file" value="" accept="image/jpg,image/jpeg,image/png,image/bmp" multiple />
+                                    </section>
+                                    <div class="img-panel">
+
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                        <div style="padding: 20px 0 40px;">
+                            <button class="btn btn-info" id="createImgCard">创建保存</button>
+                        </div>
+                        <aside class="mask works-mask">
+                            <div class="mask-content">
+                                <p class="del-p ">您确定要删除作品图片吗？</p>
+                                <p class="check-p"><span class="del-com wsdel-ok">确定</span><span class="wsdel-no">取消</span></p>
+                            </div>
+                        </aside>
+                    </div>                     
+                <% } else { %>
+                    <a href="/imgcard/edit">新建图片组</a>
+                    <table class="table table-hover table-sm">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">No.</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Sum</th>
+                                <th scope="col">Size</th>
+                                <th scope="col">CreateTime</th>
+                                <th scope="col">Setting</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% dataList.forEach(function(item, index){ %>
+                            <tr>
+                                <th scope="row"><%= index+1 %></th>
+                                <td><%= item.name %></td>
+                                <td><%= item.sum %></td>
+                                <td><%= (item.size / 1024 / 1024).toFixed(2) %> MB</td>
+                                <td><%= new Date(item.createtime).toLocaleString() %></td>
+                                <td>
+                                    <a class="deleteOne" gid="<%= item.gid %>">查看</a>
+                                    <a class="deleteOne" gid="<%= item.gid %>">删除</a>
+                                </td>
+                            </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                <% }; %>
+                
+            </div>
+        </div>
+    </div>
+    <%- include("./ejs/footer.ejs") %>
+    <script>
+        var $_imgCardFun = {
+            init: function(){
+                this.create();
+                this.delete();
+            },
+            create: function(){
+                // 提交新建分类表单
+                var $_on_submit = $('#createImgCard');
+                $_on_submit.on('click',function(){
+                    let $_val = $('.imgTitle').val();
+                    let $_cls = $('.tselect').val();
+                    let $_file = $('.file')[0];
+                    let formData = new FormData();
+                    
+                    formData.append("imgTitle", $_val);
+                    formData.append("clsId", $_cls);
+
+                    let index = 0;
+                    for (let key of $_file.files) {
+                        formData.append('file' + index, key);
+                        index++;
+                    }
+                    // console.log('JQ Upload', $_file.files)
+                    // console.log('value', $_val)
+                    $.ajax({
+                        url: '/imgcard/create',
+                        type: "POST",
+                        data: formData,
+                        // dataType: 'json',
+                        contentType: false, // 注意这里应设为false
+                        processData: false,
+                        cache: false,
+                    })
+                    .done((results)=>{
+                        console.log(results)
+                        if(results.isSuccess){
+                            // 这里写请求成功后的代码
+                            console.log('success',results)
+                            alert(results.msg);
+                        } else {
+                            // 这里写请求失败后的代码
+                            console.log('error',results)
+                            alert(results.msg);
+                        }
+                    })
+                });
+            },
+            delete: function(){
+                // 提交新建分类表单
+                var $_on_delete = $('.deleteOne');
+                $_on_delete.on('click',function(){
+                    let actionUrl = '/imgcard/delete';
+                    let $_cid = $(this).attr('gid');
+                    let bool = confirm("是否删除 id:"+ $_cid +" 的分类")
+                    if(bool){
+                        $.ajax({
+                            url: actionUrl,
+                            type: "POST",
+                            data: {
+                                gid: $_cid
+                            },
+                            dataType: 'json'
+                        })
+                        .done((results)=>{
+                            if(results.isSuccess){
+                                // 这里写请求成功后的代码
+                                // console.log('success',results)
+                                alert(results.msg);
+                            } else {
+                                // 这里写请求失败后的代码
+                                // console.log('error',results)
+                                alert(results.msg);
+                            }
+                        })
+                    }
+                });
+            }
+        }
+        $_imgCardFun.init();
+
+    </script>
+</body>
+</html>

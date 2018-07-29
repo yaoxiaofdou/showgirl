@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("./ejs/header.ejs") %>
+</head>
+<body>
+    <div class="container">
+        <div class="menu">
+            <h1>SHOW GIRL TIME</h1>
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                <%- include("./ejs/menu.ejs") %>
+            </div>
+            <div class="col-md-10">
+                <table class="table table-hover table-sm">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">NO.</th>
+                            <th scope="col">IMG</th>
+                            <th scope="col">NAME</th>
+                            <th scope="col">URL</th>
+                            <th scope="col">SIZE</th>
+                            <th scope="col">SETTING</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% dataList.forEach(function(item, index){ %>
+                        <tr>
+                            <th scope="row"><%= index+1 %></th>
+                            <td>
+                                <img class="minImg" src="https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3036260638,1523624176&fm=27&gp=0.jpg" alt="img" class="img-thumbnail" />
+                            </td>
+                            <td><%= item.name %></td>
+                            <td>~</td>
+                            <td>~</td>
+                            <td>
+                                <a href="/post/<%= item._id %>">编辑</a>
+                                <a href="/post/delete/<%= item._id %>">删除</a>
+                            </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <%- include("./ejs/footer.ejs") %>
+</body>
+</html>

@@ -1,0 +1,32 @@
+1. 登录注册接口，已ok
+
+2. 新增 分类 接口
+  classify = {
+    cid: 0,     //    Number      分类id
+    name: '',   //    String      分类名称
+    sum: 0,     //    Number      分类下子类目总数
+    size: 0,    //    Number      该分类大小
+  }
+
+3. 新增分类下 --- 图片组 接口
+  imglist = {
+    cid: 0,     //    Number      所属分类id
+    gid: 0,     //    Number      图片组id
+    name: '',   //    String      图片组名称
+    sum: 0,  //    Number      图片总数
+    size: 0,    //    Number      图片总大小
+    imgs: [     //    Array       图片集合
+      {
+        imgid: 0, //  Number      图片id
+        src: 0,   //  String      图片路径
+        size: 0,  //  Number      图片大小
+        name: '', //  String      图片名称
+        uploadTime: '',  // Date  图片上传时间
+      }
+    ]
+  }
+
+
+
+
+
