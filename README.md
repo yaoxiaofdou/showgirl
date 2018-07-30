@@ -1,14 +1,13 @@
-# showgirltime
+# 美女时间
+
+一个用 node + mongodb 搭建的 “ 美女管理后台 ” （持续更新中）
 
 
+## 快速入门
 
-## QuickStart
+项目用的是阿里的egg，初步开发了登录相关、token验证、表单验证等...
 
-<!-- add docs here for user -->
-
-see [egg docs][egg] for more detail.
-
-### Development
+### 本地开发
 
 ```bash
 $ npm i
@@ -16,18 +15,9 @@ $ npm run dev
 $ open http://localhost:7001/
 ```
 
-### Deploy
+### 部署
 
 ```bash
 $ npm start
 $ npm stop
 ```
-
-### npm scripts
-
-- Use `npm run lint` to check code style.
-- Use `npm test` to run unit test.
-- Use `npm run autod` to auto detect dependencies upgrade, see [autod](https://www.npmjs.com/package/autod) for more detail.
-
-
-[egg]: https://eggjs.org
