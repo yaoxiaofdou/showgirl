@@ -33,6 +33,24 @@ class ImgcardController extends Controller {
     ctx.body = callback;
   }
 
+  // 获取具体图片组
+  async detail() {
+    const { ctx, service } = this;
+    const g_id = ctx.query.gid;
+    const c_id = ctx.query.cid;
+    const params = {
+      gid: g_id,
+      cid: c_id,
+    };
+    const img_card = await service.imgcard.getImgCard(g_id);
+    const dataList = await service.imgcard.gotodetail(params);
+    await ctx.render('imgcard.html', {
+      imglist: dataList.data,
+      type: 'detail',
+      card: img_card.data,
+    });
+  }
+
 }
 
 module.exports = ImgcardController;

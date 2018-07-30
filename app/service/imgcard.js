@@ -1,5 +1,6 @@
 'use strict';
 
+const async = require('async');
 const fs = require('fs');
 const path = require('path');
 const formidable = require('formidable');
@@ -24,6 +25,36 @@ class ImgCardService extends Service {
     });
   }
 
+  // 查看图片组信息
+  async getImgCard(id) {
+    const { ctx } = this;
+    return new Promise(resolve => {
+      ctx.model.Imgcard.findOne({ gid: id }, (err, response) => {
+        if (err) resolve({ msg: '获取图片组失败', isSuccess: false, data: err });
+        resolve({
+          msg: '图片组信息获取成功',
+          data: response,
+          isSuccess: true,
+        });
+      });
+    });
+  }
+
+  // 查看图片组详情
+  async gotodetail(params) {
+    const { ctx } = this;
+    return new Promise(resolve => {
+      ctx.model.Imgs.find({ gid: params.gid, cid: params.cid }, (err, response) => {
+        if (err) resolve({ msg: '获取图片组详情列表失败', isSuccess: false, data: err });
+        resolve({
+          msg: '图片组详情获取成功',
+          data: response,
+          isSuccess: true,
+        });
+      });
+    });
+  }
+
   async parse(req) {
     const form = new formidable.IncomingForm();
     return new Promise(resolve => {
@@ -38,7 +69,7 @@ class ImgCardService extends Service {
     const { ctx, logger } = this;
     // 上传图片保存服务器
     const extraParams = await this.parse(ctxreq);
-    const { multipleFile, imgTitle, clsId } = extraParams && extraParams['fields'];
+    const { multipleFile, imgTitle, clsId } = extraParams && extraParams.fields;
     logger.info(multipleFile, imgTitle);
     const urls = []; // upload files object
     for (const key in extraParams.files) {
@@ -97,9 +128,15 @@ class ImgCardService extends Service {
               };
               ctx.model.Imgcard.create(imgcard_params, (card_err, card_response) => {
                 if (card_err) resolve({ msg: '创建新图片组保存失败', isSuccess: false, data: card_err });
+                // 图片组创建成功 --- 通知图片组所再分类更新
+                ctx.model.Classify.findOne({ cid: clsId }, (err, cls_res) => {
+                  if (err) resolve({ msg: '图片组创建成功，更新分类总数错误', isSuccess: false, data: '' });
+                  cls_res.sum += 1;
+                  cls_res.size += imgcard_params.size;
+                  cls_res.save();
+                });
                 // 这里要继续接下去创建各条图片数据
-                const urls_upload = [];
-                urls.forEach((item_img, img_index) => {
+                async.map(urls, (item_img, callback) => {
                   ctx.model.Counters.findAndModify({ _id: 'imgsId' }, [],
                     { $inc: { count: 1 } }, { new: true, upsert: true }, async function(img_err, img_result) {
                       if (img_err) resolve({ msg: '创建新图片组保存失败', isSuccess: false, data: img_err });
@@ -115,26 +152,18 @@ class ImgCardService extends Service {
                       };
                       ctx.model.Imgs.create(img_params, (uimg_err, uimg_res) => {
                         if (uimg_err) {
-                          urls_upload.push({
-                            type: 'error',
-                            index: img_index,
-                          });
+                          callback(null, { type: 'error', msg: '上传失败', data: uimg_err });
                         } else {
-                          urls_upload.push({
-                            type: 'success',
-                            index: img_index,
-                            data: uimg_res,
-                          });
+                          callback(null, { type: 'success', msg: '单图上传成功', data: uimg_res });
                         }
                       });
                     });
-                });
-                resolve({
-                  msg: '创建新图片组成功',
-                  data: {
-                    card: card_response,
-                  },
-                  isSuccess: true,
+                }, (err, results) => {
+                  resolve({
+                    msg: '创建新图片组成功',
+                    data: results,
+                    isSuccess: true,
+                  });
                 });
               });
             });
@@ -151,12 +180,22 @@ class ImgCardService extends Service {
   async delete(id) {
     const { ctx } = this;
     return new Promise(resolve => {
-      ctx.model.Imgcard.remove({ gid: id }, (err, response) => {
-        if (err) resolve({ msg: '删除图片组列表失败', isSuccess: false, data: err });
-        resolve({
-          msg: '删除图片组列表成功',
-          data: response,
-          isSuccess: true,
+      ctx.model.Imgcard.findOne({ gid: id }, (f_err, f_response) => {
+        if (f_err) resolve({ msg: '删除图片组列表失败, 没有找到该条数据', isSuccess: false, data: f_err });
+        ctx.model.Imgcard.remove({ gid: id }, (err, response) => {
+          if (err) resolve({ msg: '删除图片组列表失败', isSuccess: false, data: err });
+          // 图片组删除成功 --- 通知图片组所再分类更新
+          ctx.model.Classify.findOne({ cid: f_response.cid }, (err, cls_res) => {
+            if (err) resolve({ msg: '删除图片组列表成功，更新分类总数错误', isSuccess: false, data: '' });
+            cls_res.sum -= 1;
+            cls_res.size -= f_response.size;
+            cls_res.save();
+          });
+          resolve({
+            msg: '删除图片组列表成功',
+            data: response,
+            isSuccess: true,
+          });
         });
       });
     });

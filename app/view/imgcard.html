@@ -63,10 +63,10 @@
                             </div>
                         </aside>
                     </div>                     
-                <% } else { %>
+                <% } else if ( type === 'list' ) { %>
                     <a href="/imgcard/edit">新建图片组</a>
                     <table class="table table-hover table-sm">
-                        <thead class="thead-dark">
+                        <thead style="background-color: rgb(38, 87, 247); color: #fff;">
                             <tr>
                                 <th scope="col">No.</th>
                                 <th scope="col">Name</th>
@@ -85,15 +85,32 @@
                                 <td><%= (item.size / 1024 / 1024).toFixed(2) %> MB</td>
                                 <td><%= new Date(item.createtime).toLocaleString() %></td>
                                 <td>
-                                    <a class="deleteOne" gid="<%= item.gid %>">查看</a>
+                                    <a class="gotoDetail" href="/imgcard/detail?gid=<%= item.gid %>&cid=<%= item.cid %>">查看</a>
                                     <a class="deleteOne" gid="<%= item.gid %>">删除</a>
                                 </td>
                             </tr>
                             <% }); %>
                         </tbody>
                     </table>
+                <% } else { %>
+                    <p><a href="/imgcard">返回</a></p>
+                    <div class="container">
+                        <div class="page-header">
+                            <h1><%= card.name %> <small><%= new Date(card.createtime).toLocaleString() %></small></h1>
+                            <p>图片组大小: <%= (card.size / 1024 / 1024).toFixed(2) %> MB</p>
+                            <p>总图片数: <%= card.sum %> 张</p>
+                        </div>
+                        <div class="row">
+                            <% imglist.forEach(function(img, index){ %>
+                            <div class="col-xs-6 col-md-3" style="height: 300px;overflow: hidden;">
+                                <a href="#" class="thumbnail">
+                                    <img src="<%= img.src %>" alt="<%= img.name %>"/>
+                                </a>
+                            </div>
+                            <% }); %>
+                        </div>
+                    </div>
                 <% }; %>
-                
             </div>
         </div>
     </div>
@@ -137,11 +154,14 @@
                         if(results.isSuccess){
                             // 这里写请求成功后的代码
                             console.log('success',results)
-                            alert(results.msg);
+                            errmessage.init(results.msg);
+                            setTimeout(()=>{
+                                location.href = '/imgcard';
+                            },1000)
                         } else {
                             // 这里写请求失败后的代码
                             console.log('error',results)
-                            alert(results.msg);
+                            errmessage.init(results.msg);
                         }
                     })
                 });
@@ -166,11 +186,14 @@
                             if(results.isSuccess){
                                 // 这里写请求成功后的代码
                                 // console.log('success',results)
-                                alert(results.msg);
+                                errmessage.init(results.msg);
+                                setTimeout(()=>{
+                                    location.reload();
+                                },1000)
                             } else {
                                 // 这里写请求失败后的代码
                                 // console.log('error',results)
-                                alert(results.msg);
+                                errmessage.init(results.msg);
                             }
                         })
                     }

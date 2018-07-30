@@ -20,8 +20,13 @@ module.exports = appInfo => {
     },
   };
 
+  // 重置session过期时间
+  config.session = {
+    renew: true,
+  };
+
   // add your config here 中间
-  // config.middleware = [ 'auth' ];
+  config.middleware = [ 'auth' ];
 
   /**
    * @see http://mongodb.github.io/node-mongodb-native/2.2/api/Db.html#createCollection

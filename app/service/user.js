@@ -19,6 +19,15 @@ class UserService extends Service {
             }, this.app.config.jwt.secret, { expiresIn: '24h' });
             response.lastlogintime = new Date();
             response.save();
+
+            // 用户数据写入 session
+            ctx.session.user = {
+              token: my_token,
+              uid: response.uid,
+              lastlogintime: response.lastlogintime,
+              username: response.username,
+            };
+
             resolve({
               msg: '登录成功',
               data: {

@@ -27,12 +27,13 @@
                 <% } else { %>
                     <a href="/classify/edit">新建</a>
                     <table class="table table-hover table-sm">
-                        <thead class="thead-dark">
+                        <thead style="background-color: rgb(114, 91, 91); color: #fff;">
                             <tr>
                                 <th scope="col">No.</th>
                                 <th scope="col">Name</th>
                                 <th scope="col">Sum</th>
                                 <th scope="col">Size</th>
+                                <th scope="col">CreateTime</th>
                                 <th scope="col">Setting</th>
                             </tr>
                         </thead>
@@ -42,7 +43,8 @@
                                 <th scope="row"><%= index+1 %></th>
                                 <td><%= item.name %></td>
                                 <td><%= item.sum %></td>
-                                <td><%= item.size %>MB</td>
+                                <td><%= (item.size / 1024 / 1024).toFixed(2) %> MB</td>
+                                <td><%= new Date(item.createtime).toLocaleString() %></td>
                                 <td>
                                     <a class="deleteOne" cid="<%= item.cid %>">删除</a>
                                 </td>
@@ -80,11 +82,14 @@
                         if(results.isSuccess){
                             // 这里写请求成功后的代码
                             // console.log('success',results)
-                            alert(results.msg);
+                            errmessage.init(results.msg);
+                            setTimeout(()=>{
+                                location.href = '/classify';
+                            },1000)
                         } else {
                             // 这里写请求失败后的代码
                             // console.log('error',results)
-                            alert(results.msg);
+                            errmessage.init(results.msg);
                         }
                     })
                 });
@@ -109,11 +114,14 @@
                             if(results.isSuccess){
                                 // 这里写请求成功后的代码
                                 // console.log('success',results)
-                                alert(results.msg);
+                                errmessage.init(results.msg);
+                                setTimeout(()=>{
+                                    location.href = '/classify';
+                                },1000)
                             } else {
                                 // 这里写请求失败后的代码
                                 // console.log('error',results)
-                                alert(results.msg);
+                                errmessage.init(results.msg);
                             }
                         })
                     }

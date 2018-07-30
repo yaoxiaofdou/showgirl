@@ -1,0 +1,33 @@
+<!-- 弹窗组件 -->
+<script>
+  const errmessage = {
+    init: function(msg){
+      this.create(msg);
+    },
+    create: function(message){
+      let err_div = document.createElement("div");
+      let err_div_id = 'M'+Math.floor(Math.random()*10000000000);
+      err_div.innerHTML = message;
+      err_div.setAttribute("id", err_div_id);
+      err_div.setAttribute("style",`
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%,-50%);
+          z-index: 9999;
+          border-radius: 4px;
+          padding: 2vw 4vw;
+          background-color: rgba(0,0,0,0.56);
+          color: #fff;
+          font-size: 14px;
+          line-height: 18px;`);
+      document.body.appendChild(err_div);
+      this.del(err_div_id)
+    },
+    del: function(_id){
+      setTimeout(()=>{
+        document.body.removeChild(document.getElementById(_id));
+      }, 2000);
+    }
+  }
+</script>

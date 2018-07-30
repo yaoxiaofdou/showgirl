@@ -8,43 +8,103 @@
         <div class="menu">
             <h1>SHOW GIRL TIME</h1>
         </div>
-        <div class="row">
-            <div class="col-md-2">
-                <%- include("./ejs/menu.ejs") %>
+        <% if (type === 'home') { %>
+            <div class="row">
+                <div class="col-md-2">
+                    <%- include("./ejs/menu.ejs") %>
+                </div>
+                <div class="col-md-10">
+                    <table class="table table-hover table-sm">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">NO.</th>
+                                <th scope="col">IMG</th>
+                                <th scope="col">NAME</th>
+                                <th scope="col">URL</th>
+                                <th scope="col">SIZE</th>
+                                <th scope="col">SETTING</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% dataList.forEach(function(item, index){ %>
+                            <tr>
+                                <th scope="row"><%= index+1 %></th>
+                                <td>
+                                    <img class="minImg" src="https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3036260638,1523624176&fm=27&gp=0.jpg" alt="img" class="img-thumbnail" />
+                                </td>
+                                <td><%= item.name %></td>
+                                <td>~</td>
+                                <td>~</td>
+                                <td>
+                                    <a href="/post/<%= item._id %>">编辑</a>
+                                    <a href="/post/delete/<%= item._id %>">删除</a>
+                                </td>
+                            </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="col-md-10">
-                <table class="table table-hover table-sm">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th scope="col">NO.</th>
-                            <th scope="col">IMG</th>
-                            <th scope="col">NAME</th>
-                            <th scope="col">URL</th>
-                            <th scope="col">SIZE</th>
-                            <th scope="col">SETTING</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% dataList.forEach(function(item, index){ %>
-                        <tr>
-                            <th scope="row"><%= index+1 %></th>
-                            <td>
-                                <img class="minImg" src="https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3036260638,1523624176&fm=27&gp=0.jpg" alt="img" class="img-thumbnail" />
-                            </td>
-                            <td><%= item.name %></td>
-                            <td>~</td>
-                            <td>~</td>
-                            <td>
-                                <a href="/post/<%= item._id %>">编辑</a>
-                                <a href="/post/delete/<%= item._id %>">删除</a>
-                            </td>
-                        </tr>
-                        <% }); %>
-                    </tbody>
-                </table>
+        <% } else { %>
+            <div class="row">
+                <div class="col-md-4">
+                    
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Username</label>
+                        <input type="text" class="form-control" id="username" placeholder="Username">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">Password</label>
+                        <input type="password" class="form-control" id="password" placeholder="Password">
+                    </div>
+                    <button type="submit" class="btn btn-info f_submit">Submit</button>
+                    
+                </div>
             </div>
-        </div>
+        <% }; %>
+        
     </div>
     <%- include("./ejs/footer.ejs") %>
+    <script>
+        
+        let $_submit = $('.f_submit');
+        
+        $_submit.on('click', function(){
+            let $_username = $('#username').val();
+            let $_password = $('#password').val();
+            
+            if(!$_username || !$_password){
+                errmessage.init('请填写账号密码!');
+                return false;
+            }
+
+            $.ajax({
+                url: '/api/login',
+                type: "POST",
+                data: {
+                    username: $_username,
+                    password: $_password,
+                },
+                dataType: 'json',
+            })
+            .done((results)=>{
+                console.log(results)
+                if(results.isSuccess){
+                    // 这里写请求成功后的代码
+                    console.log('success',results)
+                    errmessage.init(results.msg);
+                    setTimeout(function(){
+                        location.href = '/home';
+                    },1000)
+                } else {
+                    // 这里写请求失败后的代码
+                    console.log('error',results)
+                    errmessage.init(results.msg);
+                }
+            })
+
+        });
+
+    </script>
 </body>
 </html>

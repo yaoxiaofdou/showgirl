@@ -5,10 +5,10 @@
  */
 module.exports = app => {
   const { router, controller } = app;
-  // router.get('/', controller.home.default);
-  // router.get('/login', controller.user.login);
+  router.get('/', controller.home.default);
+
   // 首页
-  router.get('/', controller.home.index);
+  router.get('/home', controller.home.index);
   router.get('/api/getlist', app.jwt, controller.home.api_getlist); // use old api app.jwt
 
   // 登录注册
@@ -27,6 +27,7 @@ module.exports = app => {
   // 图片组
   router.get('/imgcard', controller.imgcard.index);
   router.get('/imgcard/edit', controller.imgcard.edit);
+  router.get('/imgcard/detail', controller.imgcard.detail);
   router.post('/imgcard/create', controller.imgcard.create);
   router.post('/imgcard/delete', controller.imgcard.delete);
 };
