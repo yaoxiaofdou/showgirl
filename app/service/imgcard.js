@@ -25,17 +25,82 @@ class ImgCardService extends Service {
     });
   }
 
+  // 微信   ----    获取分类对应的列表数据
+  async wx_getClsDataList(params) {
+    const { ctx } = this;
+    return new Promise(resolve => {
+      const query = ctx.model.Imgcard.find({ cid: (params.cls - 0) });
+      const paga = {
+        p: (params.page) - 0 - 1 >= 0 ? (params.page) - 0 - 1 : 0,
+        s: (params.pageSize) - 0,
+      };
+      // console.log(params);
+      ctx.model.Imgcard.count({ cid: (params.cls - 0) }, (c_err, count) => {
+        query.skip(paga.p * paga.s)
+          .limit(paga.s)
+          .exec('find', (err, response) => {
+            if (err) resolve({ msg: '微信图片组获取失败', isSuccess: false, data: err });
+            resolve({
+              msg: '微信图片组获取成功',
+              data: {
+                page: params.page - 0,
+                pageSize: params.pageSize - 0,
+                pageCount: Math.ceil(count / params.pageSize),
+                list: response,
+              },
+              isSuccess: true,
+            });
+          });
+      });
+    });
+  }
+
   // 查看图片组信息
   async getImgCard(id) {
     const { ctx } = this;
     return new Promise(resolve => {
       ctx.model.Imgcard.findOne({ gid: id }, (err, response) => {
         if (err) resolve({ msg: '获取图片组失败', isSuccess: false, data: err });
-        resolve({
-          msg: '图片组信息获取成功',
-          data: response,
-          isSuccess: true,
+        // 累计一次该图片组的被浏览次数加一
+        response.look += 1;
+        response.save((err, save_data) => {
+          resolve({
+            msg: '图片组信息获取成功',
+            data: save_data,
+            isSuccess: true,
+          });
         });
+      });
+    });
+  }
+
+  // 图片组点赞功能
+  async postCardStart(id) {
+    const { ctx } = this;
+    return new Promise(resolve => {
+      // console.log(ctx.session.user.uid);
+      ctx.model.Imgcard.findOne({ gid: id }, (err, response) => {
+        if (err) resolve({ msg: '获取图片组失败', isSuccess: false, data: err });
+        const o_id = response.startIds.find(i => i === ctx.session.user.uid);
+        // console.log(response.startIds);
+        if (!o_id) {
+          response.startIds.push(ctx.session.user.uid);
+          // 累计一次该图片组的被浏览次数加一
+          response.start += 1;
+          response.save((err, save_data) => {
+            resolve({
+              msg: '图片组点赞成功',
+              data: save_data,
+              isSuccess: true,
+            });
+          });
+        } else {
+          resolve({
+            msg: '您已经给人家点过赞咯，不要重复啦',
+            data: '',
+            isSuccess: false,
+          });
+        }
       });
     });
   }
@@ -119,12 +184,15 @@ class ImgCardService extends Service {
                 cid: clsId,
                 gid: card_id,
                 name: imgTitle,
+                defaultimg: urls[0].src, // 默认图就取上传的第一张图
                 createtime: new Date(),
                 sum: urls.length,
                 size: urls.reduce((pre, next) => {
                   pre += next.size - 0;
                   return pre;
                 }, 0), // 统计总图片大小
+                start: 0,
+                look: 0,
               };
               ctx.model.Imgcard.create(imgcard_params, (card_err, card_response) => {
                 if (card_err) resolve({ msg: '创建新图片组保存失败', isSuccess: false, data: card_err });

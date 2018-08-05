@@ -50,6 +50,50 @@ class UserService extends Service {
     });
   }
 
+  async wx_login(wx_user) {
+    const { ctx } = this;
+    return new Promise(resolve => {
+      ctx.model.User.findOne({ openid: wx_user.openid }, (err, response) => {
+        if (err) resolve({ msg: '登录接口报错，请稍后登录', isSuccess: false, data: '' });
+        console.log(response);
+        console.log(wx_user);
+        if (!response) {
+          const user_info = {
+            username: wx_user.username,
+            openid: wx_user.openid,
+            language: wx_user.language,
+            country: wx_user.country,
+            city: wx_user.city,
+            province: wx_user.province,
+            lastlogintime: new Date(),
+            avatarUrl: wx_user.avatarUrl,
+          };
+          ctx.model.User.create(user_info, (err, res) => {
+            resolve({
+              msg: '创建新的微信用户成功',
+              isSuccess: true,
+              data: {
+                lastlogintime: res.lastlogintime,
+                username: res.username,
+              },
+            });
+          });
+        } else {
+          response.lastlogintime = new Date();
+          response.save();
+          resolve({
+            msg: '该用户是老用户，登录成功',
+            data: {
+              lastlogintime: response.lastlogintime,
+              username: response.username,
+            },
+            isSuccess: true,
+          });
+        }
+      });
+    });
+  }
+
   // 创建新用户
   async register(userInfo) {
     const { ctx } = this;

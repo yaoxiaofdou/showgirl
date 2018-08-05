@@ -30,14 +30,26 @@ module.exports = app => {
     name: {
       type: String, //    String      图片组名称
     },
+    defaultimg: {
+      type: String, //    String      图片组默认显示图像
+    },
     createtime: { //      Date        图片组创建时间
       type: Date,
+    },
+    start: {
+      type: Number, //    Number      图片组被点赞次数 一个id仅一次
+    },
+    look: {
+      type: Number, //    Number      图片组被浏览次数，进入一次加1
     },
     sum: { //             Number      图片组中图片总数
       type: Number,
     },
     size: { //            Number      图片组中图片总大小
       type: Number,
+    },
+    startIds: {
+      type: Array, //     Array       点过赞的用户ids
     },
   });
   return mongoose.model('Imgcard', ImgcardSchema);

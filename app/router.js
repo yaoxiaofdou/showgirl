@@ -30,4 +30,12 @@ module.exports = app => {
   router.get('/imgcard/detail', controller.imgcard.detail);
   router.post('/imgcard/create', controller.imgcard.create);
   router.post('/imgcard/delete', controller.imgcard.delete);
+  router.post('/imgcard/start', controller.imgcard.start);
+
+  // -------------- wechat 专用接口
+  router.post('/api/wx_login', controller.user.api_wx_login); // wx 登录
+  router.get('/api/wx_cls', controller.classify.we_getClsList); // 获取分类
+  router.get('/api/wx_getClsDataList', controller.imgcard.wx_getClsDataList); // 获取分类图片组
+  router.get('/api/wx_getImgsDetail', controller.imgcard.wx_getImgsDetail); // 获取分类图片组详情
+  router.get('/api/wx_getCardInfo', controller.imgcard.wx_getCardInfo); // 获取分类图片组详情
 };

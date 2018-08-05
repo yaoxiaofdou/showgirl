@@ -70,9 +70,11 @@
                             <tr>
                                 <th scope="col">No.</th>
                                 <th scope="col">Name</th>
-                                <th scope="col">Sum</th>
+                                <th scope="col">ImgSum</th>
                                 <th scope="col">Size</th>
                                 <th scope="col">CreateTime</th>
+                                <th scope="col">Start</th>
+                                <th scope="col">Look</th>
                                 <th scope="col">Setting</th>
                             </tr>
                         </thead>
@@ -84,8 +86,11 @@
                                 <td><%= item.sum %></td>
                                 <td><%= (item.size / 1024 / 1024).toFixed(2) %> MB</td>
                                 <td><%= new Date(item.createtime).toLocaleString() %></td>
+                                <td><%= item.start %> 人点过👍</td>
+                                <td><%= item.look %> 人浏览过</td>
                                 <td>
                                     <a class="gotoDetail" href="/imgcard/detail?gid=<%= item.gid %>&cid=<%= item.cid %>">查看</a>
+                                    <a class="startOne" gid="<%= item.gid %>">点赞</a>
                                     <a class="deleteOne" gid="<%= item.gid %>">删除</a>
                                 </td>
                             </tr>
@@ -120,6 +125,7 @@
             init: function(){
                 this.create();
                 this.delete();
+                this.start();
             },
             create: function(){
                 // 提交新建分类表单
@@ -197,6 +203,36 @@
                             }
                         })
                     }
+                });
+            },
+            start: function (){
+                // 提交新建分类表单
+                var $_on_start = $('.startOne');
+                $_on_start.on('click',function(){
+                    let actionUrl = '/imgcard/start';
+                    let $_cid = $(this).attr('gid');
+                    $.ajax({
+                        url: actionUrl,
+                        type: "POST",
+                        data: {
+                            gid: $_cid
+                        },
+                        dataType: 'json'
+                    })
+                    .done((results)=>{
+                        if(results.isSuccess){
+                            // 这里写请求成功后的代码
+                            // console.log('success',results)
+                            errmessage.init(results.msg);
+                            setTimeout(()=>{
+                                location.reload();
+                            },1000)
+                        } else {
+                            // 这里写请求失败后的代码
+                            // console.log('error',results)
+                            errmessage.init(results.msg);
+                        }
+                    })
                 });
             }
         }

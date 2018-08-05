@@ -10,6 +10,13 @@ class ClassifyController extends Controller {
     await ctx.render('classify.html', { dataList: dataList.data, type: 'list' });
   }
 
+  async we_getClsList() {
+    const { ctx, service } = this;
+    const callback = await service.classify.getDataList();
+    // 这里需要注意的是，给模板传的参数是一个对象,然后就可以在模板中通过对象中的 key 键来获取相应的值
+    ctx.body = callback;
+  }
+
   async edit() {
     await this.ctx.render('classify.html', { type: 'edit' });
   }

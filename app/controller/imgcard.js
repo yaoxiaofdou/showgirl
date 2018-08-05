@@ -11,6 +11,21 @@ class ImgcardController extends Controller {
     await ctx.render('imgcard.html', { dataList: dataList.data, type: 'list' });
   }
 
+  // 微信获取分类列表
+  async wx_getClsDataList() {
+    const { ctx, service } = this;
+    const $_page = ctx.query.page;
+    const $_pagesize = ctx.query.pageSize;
+    const $_cls = ctx.query.cls;
+    const params = {
+      page: $_page,
+      pageSize: $_pagesize,
+      cls: $_cls,
+    };
+    const callback = await service.imgcard.wx_getClsDataList(params);
+    ctx.body = callback;
+  }
+
   async edit() {
     const { ctx, service } = this;
     const dataList = await service.classify.getDataList();
@@ -49,6 +64,36 @@ class ImgcardController extends Controller {
       type: 'detail',
       card: img_card.data,
     });
+  }
+
+  // 微信_获取指定图片组信息
+  async wx_getCardInfo() {
+    const { ctx, service } = this;
+    const g_id = ctx.query.gid;
+    const img_card = await service.imgcard.getImgCard(g_id);
+    ctx.body = img_card;
+  }
+
+  // 微信 获取具体图片组列表详情
+  async wx_getImgsDetail() {
+    const { ctx, service } = this;
+    const g_id = ctx.query.gid;
+    const c_id = ctx.query.cid;
+    const params = {
+      gid: g_id,
+      cid: c_id,
+    };
+    const dataList = await service.imgcard.gotodetail(params);
+    ctx.body = dataList;
+  }
+
+  // 图片组点赞
+  async start() {
+    const { ctx, service } = this;
+    // 通过ctx上下文拿到请求的相关字段
+    const gid = ctx.request.body.gid;
+    const callback = await service.imgcard.postCardStart(gid);
+    ctx.body = callback;
   }
 
 }

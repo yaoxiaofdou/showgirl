@@ -25,6 +25,25 @@ module.exports = app => {
     name: {
       type: String,
     },
+    // 以下是微信登录用户才有的信息
+    openid: {
+      type: String,
+    },
+    language: {
+      type: String,
+    },
+    country: {
+      type: String,
+    },
+    city: {
+      type: String,
+    },
+    province: {
+      type: String,
+    },
+    avatarUrl: {
+      type: String,
+    },
   });
   return mongoose.model('User', UserSchema);
 };

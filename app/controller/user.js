@@ -25,6 +25,30 @@ class UserController extends Controller {
     ctx.body = callback;
   }
 
+  async api_wx_login() {
+    const { ctx, service } = this;
+    // 通过ctx上下文拿到请求的相关字段
+    const wx_username = ctx.request.body.username; // 用户名
+    const wx_openid = ctx.request.body.openid; // openid
+    const wx_language = ctx.request.body.language;
+    const wx_country = ctx.request.body.country;
+    const wx_city = ctx.request.body.city;
+    const wx_province = ctx.request.body.province;
+    const wx_avatarUrl = ctx.request.body.avatarUrl; // 头像    
+
+    const wx_user = {
+      username: wx_username,
+      openid: wx_openid,
+      language: wx_language,
+      country: wx_country,
+      city: wx_city,
+      province: wx_province,
+      avatarUrl: wx_avatarUrl,
+    };
+    const callback = await service.user.wx_login(wx_user);
+    ctx.body = callback;
+  }
+
   async api_register() {
     const { ctx, service } = this;
     // 通过ctx上下文拿到请求的相关字段
