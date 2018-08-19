@@ -1,10 +1,10 @@
 'use strict';
-
 module.exports = appInfo => {
+
   const config = exports = {};
 
   config.baseUrl = 'http://localhost:7001/'; // 开发
-  // config.baseUrl = 'https://www.5s20.com/'; // 生产
+  // config.baseUrl = 'https://api.5s20.com/'; // 生产
 
   // jwt
   config.jwt = {
@@ -33,10 +33,14 @@ module.exports = appInfo => {
    */
   config.mongoose = {
     url: process.env.EGG_MONGODB_URL || 'mongodb://127.0.0.1:27017/showgirltime',
+    // url: process.env.EGG_MONGODB_URL || 'mongodb://47.104.142.149:27017/showgirltime',
     options: {
+      // user: 'showgirltime',
+      // pass: 'Cote2017',
       server: {
         poolSize: 20,
       },
+      // useNewUrlParser: true,
     },
   };
 
@@ -73,6 +77,14 @@ module.exports = appInfo => {
 
   // 加载 errorHandler 中间件
   // config.middleware = [ 'errorHandler' ];
+
+
+  // config.alinode = {
+  //   server: 'wss://agentserver.node.aliyun.com:7001',
+  //   appid: '75253',
+  //   secret: 'dd66d3cf3f2d2b9361e076d467897cdb875fdeea',
+  //   logdir: '/tmp/',
+  // };
 
   return config;
 };
